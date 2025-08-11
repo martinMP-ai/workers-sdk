@@ -2,6 +2,7 @@ import assert from "node:assert";
 import path from "node:path";
 import { resolveDockerHost } from "@cloudflare/containers-shared";
 import { watch } from "chokidar";
+import { getWorkerRegistry } from "miniflare";
 import { getAssetsOptions, validateAssetsArgsAndConfig } from "../../assets";
 import { fillOpenAPIConfiguration } from "../../cloudchamber/common";
 import { readConfig } from "../../config";
@@ -16,7 +17,10 @@ import {
 } from "../../dev";
 import { getClassNamesWhichUseSQLite } from "../../dev/class-names-sqlite";
 import { getLocalPersistencePath } from "../../dev/get-local-persistence-path";
-import { getDockerPath } from "../../environment-variables/misc-variables";
+import {
+	getDockerPath,
+	getRegistryPath,
+} from "../../environment-variables/misc-variables";
 import { UserError } from "../../errors";
 import { getFlag } from "../../experimental-flags";
 import { logger, runWithLogLevel } from "../../logger";
@@ -203,6 +207,8 @@ async function resolveBindings(
 	);
 
 	const maskedVars = maskVars(bindings, config);
+	const registryPath = getRegistryPath();
+	const registry = getWorkerRegistry(registryPath);
 
 	// now log all available bindings into the terminal
 	printBindings(
@@ -212,8 +218,7 @@ async function resolveBindings(
 		},
 		input.tailConsumers ?? config.tail_consumers,
 		{
-			// FIXME: We can use getWorkerRegistry here, but we might need a way to print the bindings when the registry update?
-			// registry: input.dev?.registry,
+			registry,
 			local: !input.dev?.remote,
 			imagesLocalMode: input.dev?.imagesLocalMode,
 			name: config.name,

@@ -5,6 +5,7 @@ import { UserError } from "../errors";
 import { getFlag } from "../experimental-flags";
 import { logger } from "../logger";
 import type { CfTailConsumer, CfWorkerInit } from "../deployment-bundle/worker";
+import type { WorkerRegistry } from "miniflare";
 
 export const friendlyBindingNames: Record<
 	keyof CfWorkerInit["bindings"],
@@ -46,8 +47,7 @@ export function printBindings(
 	bindings: Partial<CfWorkerInit["bindings"]>,
 	tailConsumers: CfTailConsumer[] = [],
 	context: {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		registry?: Record<string, any> | null;
+		registry?: WorkerRegistry | null;
 		local?: boolean;
 		imagesLocalMode?: boolean;
 		name?: string;
@@ -131,7 +131,7 @@ export function printBindings(
 						if (
 							registryDefinition &&
 							registryDefinition.durableObjects.some(
-								(d: { className: string }) => d.className === class_name
+								(d) => d.className === class_name
 							)
 						) {
 							value += `, defined in ${script_name}`;

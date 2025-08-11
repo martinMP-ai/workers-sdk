@@ -2564,4 +2564,8 @@ export * from "./shared";
 export * from "./workers";
 export * from "./merge";
 export * from "./zod-format";
-export { getDefaultDevRegistryPath } from "./shared/dev-registry";
+export {
+	type WorkerRegistry,
+	getDefaultDevRegistryPath,
+	getWorkerRegistry,
+} from "./shared/dev-registry";
