@@ -62,6 +62,7 @@ function removeWorkersDev(str: string) {
 function removeTimestamp(str: string) {
 	return str
 		.replace(/\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d+?Z/g, "TIMESTAMP")
+		.replace(/\d\d\d\d-\d\d-\d\d/g, "TIMESTAMP")
 		.replace(/\d\d:\d\d:\d\d/g, "TIMESTAMP");
 }
 

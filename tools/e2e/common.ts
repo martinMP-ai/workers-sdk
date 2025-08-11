@@ -241,7 +241,16 @@ export const deleteContainerApplication = async (app: ContainerApplication) => {
 
 export const listTmpKVNamespaces = async () => {
 	return (await apiFetchList<KVNamespaceInfo>(`/storage/kv/namespaces`)).filter(
-		(kv) => kv.title.includes("tmp-e2e") || kv.title.includes("tmp_e2e")
+		(kv) => {
+			const isTempE2E =
+				kv.title.includes("tmp-e2e") || kv.title.includes("tmp_e2e");
+			// Since KV namespaces don't have creation date metadata, we encode the date in the title
+			const creationDate = new Date(
+				kv.title.match(/tmp-e2e-(\d{4}-\d{2}-\d{2})$/)?.[1] ?? 0
+			);
+			// Temp KV namespaces that are more than an hour old (or any age if no date is found)
+			return isTempE2E && Date.now() - creationDate.valueOf() > 1000 * 60 * 60;
+		}
 	);
 };
 
@@ -309,7 +318,7 @@ export const listE2eContainerImages = () => {
 		.split("\n")
 		.map((line) => {
 			const match = line.match(
-				/^(?<imageName>tmp-e2e-worker[a-z0-9-]+)\s+tmp-e2e$/
+				/^(?<imageName>tmp-e2e-(?:\d{4}-\d{2}-\d{2}-)?worker[a-z0-9-]+)\s+tmp-e2e$/
 			);
 			if (!match?.groups) {
 				return null;

@@ -96,7 +96,7 @@ describe.each(RUNTIMES)(
 			}
 
 			expect(normalize(output.stdout)).toContain(
-				"🔐 Creating secret... (Name: tmp-e2e-secrets-store-secret-00000000-0000-0000-0000-000000000000, Value: REDACTED, Scopes: workers, Comment: test"
+				"🔐 Creating secret... (Name: tmp-e2e-TIMESTAMP-secrets-store-secret-00000000-0000-0000-0000-000000000000, Value: REDACTED, Scopes: workers, Comment: test"
 			);
 			expect(normalize(output.stdout)).toContain(
 				"✅ Created secret! (ID: 00000000000000000000000000000000)"
@@ -112,7 +112,7 @@ describe.each(RUNTIMES)(
 				"🔐 Getting secret... (ID: 00000000000000000000000000000000)"
 			);
 			expect(normalize(output.stdout)).toContain(
-				"tmp-e2e-secrets-store-secret-00000000-0000-0000-0000-000000000000"
+				"tmp-e2e-TIMESTAMP-secrets-store-secret-00000000-0000-0000-0000-000000000000"
 			);
 		});
 
