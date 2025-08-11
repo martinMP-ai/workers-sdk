@@ -18,16 +18,14 @@ import { getGlobalWranglerConfigPath } from "./wrangler";
 
 export type WorkerRegistry = Record<string, WorkerDefinition>;
 
-export type WorkerEntrypointsDefinition = Record<
-	"default" | string,
-	{ host: string; port: number } | undefined
->;
-
 export type WorkerDefinition = {
 	protocol: "http" | "https";
 	host: string;
 	port: number;
-	entrypointAddresses: WorkerEntrypointsDefinition;
+	entrypointAddresses: Record<
+		"default" | string,
+		{ host: string; port: number } | undefined
+	>;
 	durableObjects: { name: string; className: string }[];
 };
 

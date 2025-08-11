@@ -79,6 +79,7 @@ export interface ConfigBundle {
 	complianceRegion: Config["compliance_region"] | undefined;
 	bindings: CfWorkerInit["bindings"];
 	migrations: Config["migrations"] | undefined;
+	devRegistryPath: string | undefined;
 	legacyAssetPaths: LegacyAssetPaths | undefined;
 	assets: AssetsOptions | undefined;
 	initialPort: Port;
@@ -906,7 +907,7 @@ export async function buildMiniflareOptions(
 		inspectorPort: config.inspect ? config.inspectorPort : undefined,
 		liveReload: config.liveReload,
 		upstream,
-		unsafeDevRegistryPath: getRegistryPath(),
+		unsafeDevRegistryPath: config.devRegistryPath,
 		unsafeDevRegistryDurableObjectProxy: true,
 		unsafeProxySharedSecret: proxyToUserWorkerAuthenticationSecret,
 		unsafeTriggerHandlers: true,

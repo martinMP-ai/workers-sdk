@@ -17,10 +17,7 @@ import {
 } from "../../dev";
 import { getClassNamesWhichUseSQLite } from "../../dev/class-names-sqlite";
 import { getLocalPersistencePath } from "../../dev/get-local-persistence-path";
-import {
-	getDockerPath,
-	getRegistryPath,
-} from "../../environment-variables/misc-variables";
+import { getDockerPath } from "../../environment-variables/misc-variables";
 import { UserError } from "../../errors";
 import { getFlag } from "../../experimental-flags";
 import { logger, runWithLogLevel } from "../../logger";
@@ -156,6 +153,7 @@ async function resolveDevConfig(
 		testScheduled: input.dev?.testScheduled,
 		// absolute resolved path
 		persist: localPersistencePath,
+		registryPath: input.dev?.registryPath,
 		bindVectorizeToProd: input.dev?.bindVectorizeToProd ?? false,
 		multiworkerPrimary: input.dev?.multiworkerPrimary,
 		imagesLocalMode: input.dev?.imagesLocalMode ?? false,
@@ -207,8 +205,9 @@ async function resolveBindings(
 	);
 
 	const maskedVars = maskVars(bindings, config);
-	const registryPath = getRegistryPath();
-	const registry = getWorkerRegistry(registryPath);
+	const registry = input.dev?.registryPath
+		? getWorkerRegistry(input.dev.registryPath)
+		: null;
 
 	// now log all available bindings into the terminal
 	printBindings(

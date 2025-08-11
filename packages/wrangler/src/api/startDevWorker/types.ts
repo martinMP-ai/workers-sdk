@@ -196,6 +196,9 @@ export interface StartDevWorkerInput {
 		/** Whether to build and connect to containers during local dev. Requires Docker daemon to be running. Defaults to true. */
 		enableContainers?: boolean;
 
+		/** Path to the worker registry directory */
+		registryPath?: string;
+
 		/** Path to the docker executable. Defaults to 'docker' */
 		dockerPath?: string;
 

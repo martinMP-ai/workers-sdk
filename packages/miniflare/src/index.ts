@@ -2566,6 +2566,7 @@ export * from "./merge";
 export * from "./zod-format";
 export {
 	type WorkerRegistry,
+	type WorkerDefinition,
 	getDefaultDevRegistryPath,
 	getWorkerRegistry,
 } from "./shared/dev-registry";

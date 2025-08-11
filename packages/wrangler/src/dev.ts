@@ -16,6 +16,7 @@ import { validateRoutes } from "./deploy/deploy";
 import { validateNodeCompatMode } from "./deployment-bundle/node-compat";
 import { getVarsForDev } from "./dev/dev-vars";
 import registerDevHotKeys from "./dev/hotkeys";
+import { getRegistryPath } from "./environment-variables/misc-variables";
 import { UserError } from "./errors";
 import { getFlag } from "./experimental-flags";
 import isInteractive from "./is-interactive";
@@ -505,6 +506,7 @@ async function setupDevEnv(
 				liveReload: args.liveReload,
 				testScheduled: args.testScheduled,
 				logLevel: args.logLevel,
+				registryPath: args.disableDevRegistry ? undefined : getRegistryPath(),
 				bindVectorizeToProd: args.experimentalVectorizeBindToProd,
 				imagesLocalMode: args.experimentalImagesLocalMode,
 				multiworkerPrimary: args.multiworkerPrimary,
