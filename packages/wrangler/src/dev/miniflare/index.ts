@@ -10,7 +10,6 @@ import {
 } from "../../ai/fetcher";
 import { ModuleTypeToRuleType } from "../../deployment-bundle/module-collection";
 import { withSourceURLs } from "../../deployment-bundle/source-url";
-import { getRegistryPath } from "../../environment-variables/misc-variables";
 import {
 	EXTERNAL_IMAGES_WORKER_NAME,
 	EXTERNAL_IMAGES_WORKER_SCRIPT,

@@ -285,7 +285,9 @@ export class DevRegistry {
 					JSON.stringify(registry[service]) !==
 					JSON.stringify(this.registry[service])
 				) {
-					this.onUpdate(registry);
+					// A service we depend on has changed, notify listeners
+					// Provide a deep copy to prevent accidental mutations by consumers
+					this.onUpdate(JSON.parse(JSON.stringify(registry)));
 					break;
 				}
 			}
