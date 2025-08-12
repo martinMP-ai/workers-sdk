@@ -430,8 +430,7 @@ describe.each([{ cmd: "wrangler dev" }])("dev registry $cmd", ({ cmd }) => {
 
 			const workerB = helper.runLongLived(cmd, { cwd: b });
 
-			// Uncomment the line below when we fix the connected status
-			// await workerA.readUntil(/connected/);
+			await workerA.readUntil(/connected/);
 
 			await expect(fetchText(`${url}`)).resolves.toBe("hello from a");
 

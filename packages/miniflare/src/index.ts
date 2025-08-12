@@ -966,7 +966,8 @@ export class Miniflare {
 		this.#devRegistry = new DevRegistry(
 			this.#sharedOpts.core.unsafeDevRegistryPath,
 			this.#sharedOpts.core.unsafeDevRegistryDurableObjectProxy,
-			this.#log
+			this.#log,
+			this.#sharedOpts.core.unsafeHandleDevRegistryUpdate
 		);
 
 		// Build path for temporary directory. We don't actually want to create this
@@ -2216,7 +2217,8 @@ export class Miniflare {
 
 		await this.#devRegistry.updateRegistryPath(
 			sharedOpts.core.unsafeDevRegistryPath,
-			sharedOpts.core.unsafeDevRegistryDurableObjectProxy
+			sharedOpts.core.unsafeDevRegistryDurableObjectProxy,
+			sharedOpts.core.unsafeHandleDevRegistryUpdate
 		);
 		// Send to runtime and wait for updates to process
 		await this.#assembleAndUpdateConfig();

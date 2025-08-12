@@ -22,6 +22,7 @@ import type { RemoteProxySession } from "../remoteBindings";
 import type {
 	BundleCompleteEvent,
 	BundleStartEvent,
+	DevRegistryUpdateEvent,
 	PreviewTokenExpiredEvent,
 	ReloadCompleteEvent,
 	ReloadStartEvent,
@@ -280,7 +281,13 @@ export class LocalRuntimeController extends RuntimeController {
 				configBundle,
 				this.#proxyToUserWorkerAuthenticationSecret,
 				this.#remoteProxySessionData?.session?.remoteProxyConnectionString,
-				!!experimentalRemoteBindings
+				!!experimentalRemoteBindings,
+				(registry) => {
+					this.emitDevRegistryUpdateEvent({
+						type: "devRegistryUpdate",
+						registry,
+					});
+				}
 			);
 			options.liveReload = false; // TODO: set in buildMiniflareOptions once old code path is removed
 			if (this.#mf === undefined) {
@@ -426,6 +433,9 @@ export class LocalRuntimeController extends RuntimeController {
 	}
 	emitReloadCompleteEvent(data: ReloadCompleteEvent) {
 		this.emit("reloadComplete", data);
+	}
+	emitDevRegistryUpdateEvent(data: DevRegistryUpdateEvent): void {
+		this.emit("devRegistryUpdate", data);
 	}
 }
 

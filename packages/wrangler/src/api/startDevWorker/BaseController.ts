@@ -2,6 +2,7 @@ import { EventEmitter } from "node:events";
 import type {
 	BundleCompleteEvent,
 	BundleStartEvent,
+	DevRegistryUpdateEvent,
 	ErrorEvent,
 	PreviewTokenExpiredEvent,
 	ReloadCompleteEvent,
@@ -75,6 +76,7 @@ export abstract class Controller<
 type RuntimeControllerEventMap = ControllerEventMap & {
 	reloadStart: [ReloadStartEvent];
 	reloadComplete: [ReloadCompleteEvent];
+	devRegistryUpdate: [DevRegistryUpdateEvent];
 };
 export abstract class RuntimeController extends Controller<RuntimeControllerEventMap> {
 	// ******************
@@ -92,4 +94,5 @@ export abstract class RuntimeController extends Controller<RuntimeControllerEven
 
 	abstract emitReloadStartEvent(data: ReloadStartEvent): void;
 	abstract emitReloadCompleteEvent(data: ReloadCompleteEvent): void;
+	abstract emitDevRegistryUpdateEvent(data: DevRegistryUpdateEvent): void;
 }

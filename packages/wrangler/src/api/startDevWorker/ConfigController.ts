@@ -48,12 +48,13 @@ import {
 import type { Config } from "../../config";
 import type { CfUnsafe } from "../../deployment-bundle/worker";
 import type { ControllerEventMap } from "./BaseController";
-import type { ConfigUpdateEvent } from "./events";
+import type { ConfigUpdateEvent, DevRegistryUpdateEvent } from "./events";
 import type {
 	StartDevWorkerInput,
 	StartDevWorkerOptions,
 	Trigger,
 } from "./types";
+import type { WorkerRegistry } from "miniflare";
 
 type ConfigControllerEventMap = ControllerEventMap & {
 	configUpdate: [ConfigUpdateEvent];
@@ -174,7 +175,11 @@ async function resolveDevConfig(
 async function resolveBindings(
 	config: Config,
 	input: StartDevWorkerInput
-): Promise<{ bindings: StartDevWorkerOptions["bindings"]; unsafe?: CfUnsafe }> {
+): Promise<{
+	bindings: StartDevWorkerOptions["bindings"];
+	unsafe?: CfUnsafe;
+	printCurrentBindings: (registry: WorkerRegistry | null) => void;
+}> {
 	const bindings = getBindings(
 		config,
 		input.env,
@@ -204,25 +209,29 @@ async function resolveBindings(
 		input.dev?.experimentalRemoteBindings
 	);
 
-	const maskedVars = maskVars(bindings, config);
-	const registry = input.dev?.registryPath
-		? getWorkerRegistry(input.dev.registryPath)
-		: null;
+	// Create a print function that captures the current bindings context
+	const printCurrentBindings = (registry: WorkerRegistry | null) => {
+		const maskedVars = maskVars(bindings, config);
 
-	// now log all available bindings into the terminal
-	printBindings(
-		{
-			...bindings,
-			vars: maskedVars,
-		},
-		input.tailConsumers ?? config.tail_consumers,
-		{
-			registry,
-			local: !input.dev?.remote,
-			imagesLocalMode: input.dev?.imagesLocalMode,
-			name: config.name,
-			vectorizeBindToProd: input.dev?.bindVectorizeToProd,
-		}
+		printBindings(
+			{
+				...bindings,
+				vars: maskedVars,
+			},
+			input.tailConsumers ?? config.tail_consumers,
+			{
+				registry,
+				local: !input.dev?.remote,
+				imagesLocalMode: input.dev?.imagesLocalMode,
+				name: config.name,
+				vectorizeBindToProd: input.dev?.bindVectorizeToProd,
+			}
+		);
+	};
+
+	// Print the initial bindings table
+	printCurrentBindings(
+		input.dev?.registryPath ? getWorkerRegistry(input.dev.registryPath) : null
 	);
 
 	return {
@@ -231,6 +240,7 @@ async function resolveBindings(
 			...convertCfWorkerInitBindingsToBindings(bindings),
 		},
 		unsafe: bindings.unsafe,
+		printCurrentBindings,
 	};
 }
 
@@ -278,7 +288,10 @@ async function resolveTriggers(
 async function resolveConfig(
 	config: Config,
 	input: StartDevWorkerInput
-): Promise<StartDevWorkerOptions> {
+): Promise<{
+	config: StartDevWorkerOptions;
+	printCurrentBindings: (registry: WorkerRegistry | null) => void;
+}> {
 	if (
 		config.pages_build_output_dir &&
 		input.dev?.multiworkerPrimary === false
@@ -304,7 +317,10 @@ async function resolveConfig(
 
 	const nodejsCompatMode = unwrapHook(input.build?.nodejsCompatMode, config);
 
-	const { bindings, unsafe } = await resolveBindings(config, input);
+	const { bindings, unsafe, printCurrentBindings } = await resolveBindings(
+		config,
+		input
+	);
 
 	const assetsOptions = getAssetsOptions(
 		{
@@ -457,12 +473,13 @@ async function resolveConfig(
 		);
 	}
 
-	return resolved;
+	return { config: resolved, printCurrentBindings };
 }
 
 export class ConfigController extends Controller<ConfigControllerEventMap> {
 	latestInput?: StartDevWorkerInput;
 	latestConfig?: StartDevWorkerOptions;
+	#printCurrentBindings?: (registry: WorkerRegistry | null) => void;
 
 	#configWatcher?: ReturnType<typeof watch>;
 	#abortController?: AbortController;
@@ -539,11 +556,13 @@ export class ConfigController extends Controller<ConfigControllerEventMap> {
 				void this.#ensureWatchingConfig(fileConfig.configPath);
 			}
 
-			const resolvedConfig = await resolveConfig(fileConfig, input);
+			const { config: resolvedConfig, printCurrentBindings } =
+				await resolveConfig(fileConfig, input);
 			if (signal.aborted) {
 				return;
 			}
 			this.latestConfig = resolvedConfig;
+			this.#printCurrentBindings = printCurrentBindings;
 			this.emitConfigUpdateEvent(resolvedConfig);
 
 			return this.latestConfig;
@@ -565,6 +584,10 @@ export class ConfigController extends Controller<ConfigControllerEventMap> {
 	// ******************
 	//   Event Handlers
 	// ******************
+	onDevRegistryUpdate(event: DevRegistryUpdateEvent) {
+		// Re-print the bindings table with updated registry information
+		this.#printCurrentBindings?.(event.registry);
+	}
 
 	async teardown() {
 		logger.debug("ConfigController teardown beginning...");

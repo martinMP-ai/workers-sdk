@@ -52,6 +52,7 @@ import type {
 	RemoteProxyConnectionString,
 	SourceOptions,
 	WorkerOptions,
+	WorkerRegistry,
 } from "miniflare";
 import type { UUID } from "node:crypto";
 
@@ -848,7 +849,8 @@ export async function buildMiniflareOptions(
 	config: Omit<ConfigBundle, "rules">,
 	proxyToUserWorkerAuthenticationSecret: UUID,
 	remoteProxyConnectionString: RemoteProxyConnectionString | undefined,
-	remoteBindingsEnabled: boolean
+	remoteBindingsEnabled: boolean,
+	onDevRegistryUpdate?: (registry: WorkerRegistry) => void
 ): Promise<Options> {
 	if (config.crons?.length && !config.testScheduled) {
 		if (!didWarnMiniflareCronSupport) {
@@ -909,6 +911,7 @@ export async function buildMiniflareOptions(
 		upstream,
 		unsafeDevRegistryPath: config.devRegistryPath,
 		unsafeDevRegistryDurableObjectProxy: true,
+		unsafeHandleDevRegistryUpdate: onDevRegistryUpdate,
 		unsafeProxySharedSecret: proxyToUserWorkerAuthenticationSecret,
 		unsafeTriggerHandlers: true,
 		// The way we run Miniflare instances with wrangler dev is that there are two:
