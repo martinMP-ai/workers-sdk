@@ -94,5 +94,4 @@ export abstract class RuntimeController extends Controller<RuntimeControllerEven
 
 	abstract emitReloadStartEvent(data: ReloadStartEvent): void;
 	abstract emitReloadCompleteEvent(data: ReloadCompleteEvent): void;
-	abstract emitDevRegistryUpdateEvent(data: DevRegistryUpdateEvent): void;
 }
