@@ -1,5 +1,25 @@
 # @cloudflare/unenv-preset
 
+## 2.6.1
+
+### Patch Changes
+
+- [#10243](https://github.com/cloudflare/workers-sdk/pull/10243) [`d481901`](https://github.com/cloudflare/workers-sdk/commit/d48190127fbb564c5abdd3c8f33433a6381d8899) Thanks [@devin-ai-integration](https://github.com/apps/devin-ai-integration)! - Remove async_hooks polyfill - now uses native workerd implementation
+
+  The async_hooks module is now provided natively by workerd, making the polyfill unnecessary. This improves performance and ensures better compatibility with Node.js async_hooks APIs.
+
+## 2.6.0
+
+### Minor Changes
+
+- [#10208](https://github.com/cloudflare/workers-sdk/pull/10208) [`6b9cd5b`](https://github.com/cloudflare/workers-sdk/commit/6b9cd5b18775446760e938a10bf8ca1cfbb8c96f) Thanks [@vicb](https://github.com/vicb)! - add support for native `node:os`
+
+- [#10205](https://github.com/cloudflare/workers-sdk/pull/10205) [`7e204a9`](https://github.com/cloudflare/workers-sdk/commit/7e204a941e4e907b690f2ad6ff3cb10f2d2f20bd) Thanks [@vicb](https://github.com/vicb)! - Add support for http and https server APIs
+
+### Patch Changes
+
+- [#10150](https://github.com/cloudflare/workers-sdk/pull/10150) [`3f83ac1`](https://github.com/cloudflare/workers-sdk/commit/3f83ac1d8b67c07a0c7d08961b8a81a830543853) Thanks [@vicb](https://github.com/vicb)! - Refactor http overrides
+
 ## 2.5.0
 
 ### Minor Changes
