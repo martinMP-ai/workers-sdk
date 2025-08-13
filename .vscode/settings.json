@@ -91,5 +91,6 @@
 			"mode": "auto"
 		}
 	],
-	"editor.formatOnSave": true
+	"editor.formatOnSave": true,
+	"utCopilot.common.testFramework": "vitest"
 }
